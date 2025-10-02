@@ -1,0 +1,5 @@
+{
+  "name": "Allinoneexpensetracker ",
+  "description": "A modern, full-featured expense tracker web app with a neumorphic design. It allows users to manage income and expenses, view financial reports with charts, and export data to PDF. The app is fully responsive and supports light/dark themes.",
+  "requestFramePermissions": []
+}

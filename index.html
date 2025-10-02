@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neumorphic Expense Tracker</title>
+    <meta name="theme-color" content="#e0e5ec" id="theme-color-meta" />
+    <link rel="manifest" href="/manifest.json" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'light-bg': '#e0e5ec',
+              'light-shadow-dark': '#a3b1c6',
+              'light-shadow-light': '#ffffff',
+              'dark-bg': '#2c3038',
+              'dark-shadow-dark': '#22252a',
+              'dark-shadow-light': '#363b46',
+              'lime-bg': '#f0f2eb',
+              'lime-shadow-dark': '#d1d5c7',
+              'lime-shadow-light': '#ffffff',
+              'lime-text': '#4a5551',
+              'rose-bg': '#fbe9e7',
+              'rose-shadow-dark': '#d8c8c6',
+              'rose-shadow-light': '#ffffff',
+              'rose-text': '#5d4037',
+              'ocean-bg': '#e6f0f5',
+              'ocean-shadow-dark': '#c2d4de',
+              'ocean-shadow-light': '#ffffff',
+              'ocean-text': '#3a506b',
+              'tangerine-bg': '#fff0e6',
+              'tangerine-shadow-dark': '#dcc0b0',
+              'tangerine-shadow-light': '#ffffff',
+              'tangerine-text': '#6b4f4f',
+              'lavender-bg': '#f3eef7',
+              'lavender-shadow-dark': '#d3c7d9',
+              'lavender-shadow-light': '#ffffff',
+              'lavender-text': '#594b61',
+              'primary-mint': '#66DDAA',
+              'primary-lime': '#a8c97f',
+              'primary-rose': '#e91e63',
+              'primary-ocean': '#00b4d8',
+              'primary-tangerine': '#ff6b35',
+              'primary-lavender': '#9d4edd',
+            },
+            boxShadow: {
+              'neumorphic-convex': '7px 7px 15px #a3b1c6, -7px -7px 15px #ffffff',
+              'neumorphic-concave': 'inset 7px 7px 15px #a3b1c6, inset -7px -7px 15px #ffffff',
+              'neumorphic-convex-dark': '7px 7px 15px #22252a, -7px -7px 15px #363b46',
+              'neumorphic-concave-dark': 'inset 7px 7px 15px #22252a, inset -7px -7px 15px #363b46',
+              'neumorphic-convex-lime': '7px 7px 15px #d1d5c7, -7px -7px 15px #ffffff',
+              'neumorphic-concave-lime': 'inset 7px 7px 15px #d1d5c7, inset -7px -7px 15px #ffffff',
+              'neumorphic-convex-rose': '7px 7px 15px #d8c8c6, -7px -7px 15px #ffffff',
+              'neumorphic-concave-rose': 'inset 7px 7px 15px #d8c8c6, inset -7px -7px 15px #ffffff',
+              'neumorphic-convex-ocean': '7px 7px 15px #c2d4de, -7px -7px 15px #ffffff',
+              'neumorphic-concave-ocean': 'inset 7px 7px 15px #c2d4de, inset -7px -7px 15px #ffffff',
+              'neumorphic-convex-tangerine': '7px 7px 15px #dcc0b0, -7px -7px 15px #ffffff',
+              'neumorphic-concave-tangerine': 'inset 7px 7px 15px #dcc0b0, inset -7px -7px 15px #ffffff',
+              'neumorphic-convex-lavender': '7px 7px 15px #d3c7d9, -7px -7px 15px #ffffff',
+              'neumorphic-concave-lavender': 'inset 7px 7px 15px #d3c7d9, inset -7px -7px 15px #ffffff',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      @keyframes scaleIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      @keyframes scaleOut {
+        from { transform: scale(1); opacity: 1; }
+        to { transform: scale(0.95); opacity: 0; }
+      }
+      @keyframes slideInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes slideOutUp {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+          max-height: 200px;
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+          max-height: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          margin-top: 0;
+          margin-bottom: 0;
+          border-width: 0;
+        }
+      }
+
+      /* RIPPLE EFFECT STYLES */
+      :root { --ripple-color: rgba(0, 0, 0, 0.1); }
+      :root.dark { --ripple-color: rgba(255, 255, 255, 0.1); }
+      :root.lime { --ripple-color: rgba(74, 85, 81, 0.15); }
+      :root.rose { --ripple-color: rgba(93, 64, 55, 0.15); }
+      :root.ocean { --ripple-color: rgba(58, 80, 107, 0.15); }
+      :root.tangerine { --ripple-color: rgba(107, 79, 79, 0.15); }
+      :root.lavender { --ripple-color: rgba(89, 75, 97, 0.15); }
+
+      .global-ripple-effect {
+        animation: global-ripple 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      }
+
+      @keyframes global-ripple {
+        from {
+          width: 0;
+          height: 0;
+          opacity: 0.4;
+        }
+        to {
+          width: 300vmax;
+          height: 300vmax;
+          opacity: 0;
+        }
+      }
+      /* END RIPPLE EFFECT STYLES */
+
+      .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+      .animate-fadeOut { animation: fadeOut 0.3s ease-out forwards; }
+      .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
+      .animate-scaleOut { animation: scaleOut 0.3s ease-out forwards; }
+      .transaction-item-enter { animation: slideInDown 0.4s ease-out forwards; }
+      .transaction-item-exit { animation: slideOutUp 0.4s ease-out forwards; overflow: hidden; }
+
+      /* For custom color picker */
+      input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      input[type="color"]::-webkit-color-swatch {
+        border: none;
+        border-radius: 50%;
+      }
+    </style>
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.2.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
