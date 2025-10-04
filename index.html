@@ -6,12 +6,23 @@
     <title>Neumorphic Expense Tracker</title>
     <meta name="theme-color" content="#e0e5ec" id="theme-color-meta" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Font Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    
+    <!-- Pre-compiled Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
             colors: {
               'light-bg': '#e0e5ec',
               'light-shadow-dark': '#a3b1c6',
@@ -67,6 +78,9 @@
       }
     </script>
     <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -108,6 +122,11 @@
           margin-top: 0;
           margin-bottom: 0;
           border-width: 0;
+        }
+      }
+       @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
       }
 

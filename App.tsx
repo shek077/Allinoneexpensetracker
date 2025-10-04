@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
@@ -7,20 +7,24 @@ import Header from './components/Header';
 import Summary from './components/Summary';
 import Filters from './components/Filters';
 import TransactionList from './components/TransactionList';
-import TransactionForm from './components/TransactionForm';
-import Charts from './components/Charts';
 import BudgetProgress from './components/BudgetProgress';
-import BudgetGoals from './components/BudgetGoals';
-import Alerts from './components/Alerts';
 import Balances from './components/Balances';
-import PeopleManager from './components/PeopleManager';
 import UpcomingSubscriptions from './components/UpcomingSubscriptions';
-import SubscriptionManager from './components/SubscriptionManager';
-import CategoryTagManager from './components/CategoryTagManager';
-import ConfirmationDialog from './components/ConfirmationDialog';
 import { generatePdf } from './services/pdfGenerator';
 import { CURRENCIES, INCOME_CATEGORIES, EXPENSE_CATEGORIES } from './constants';
 import AnimatedModal from './components/AnimatedModal';
+import Loader from './components/Loader';
+import Alerts from './components/Alerts';
+
+// Lazy load components for code-splitting and better performance
+const Charts = lazy(() => import('./components/Charts'));
+const TransactionForm = lazy(() => import('./components/TransactionForm'));
+const BudgetGoals = lazy(() => import('./components/BudgetGoals'));
+const PeopleManager = lazy(() => import('./components/PeopleManager'));
+const SubscriptionManager = lazy(() => import('./components/SubscriptionManager'));
+const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'));
+const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
+
 
 const calculateNextPaymentDate = (transaction: Transaction): Date => {
     let nextDate = new Date(transaction.date);
@@ -500,7 +504,9 @@ const App: React.FC = () => {
                     <UpcomingSubscriptions transactions={transactions} currency={filterCurrency} />
                 </div>
             </div>
-            <Charts transactions={filteredTransactions} categoryColors={categoryColors} />
+            <Suspense fallback={<Loader />}>
+                <Charts transactions={filteredTransactions} categoryColors={categoryColors} />
+            </Suspense>
           </div>
           <Filters 
             filterCategory={filterCategory}
@@ -540,67 +546,79 @@ const App: React.FC = () => {
       </div>
 
       <AnimatedModal isOpen={isFormVisible} onClose={() => setIsFormVisible(false)}>
-        <TransactionForm
-          onSubmit={editingTransaction ? updateTransaction : addTransaction}
-          initialData={editingTransaction}
-          onClose={() => setIsFormVisible(false)}
-          people={people}
-          expenseCategories={combinedExpenseCategories}
-          incomeCategories={combinedIncomeCategories}
-          onAddTag={addTag}
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <TransactionForm
+            onSubmit={editingTransaction ? updateTransaction : addTransaction}
+            initialData={editingTransaction}
+            onClose={() => setIsFormVisible(false)}
+            people={people}
+            expenseCategories={combinedExpenseCategories}
+            incomeCategories={combinedIncomeCategories}
+            onAddTag={addTag}
+          />
+        </Suspense>
       </AnimatedModal>
       
       <AnimatedModal isOpen={isBudgetFormVisible} onClose={() => setIsBudgetFormVisible(false)}>
-        <BudgetGoals
-            budgetGoals={budgetGoals}
-            onSave={addOrUpdateBudgetGoal}
-            onDelete={deleteBudgetGoal}
-            onClose={() => setIsBudgetFormVisible(false)}
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <BudgetGoals
+              budgetGoals={budgetGoals}
+              onSave={addOrUpdateBudgetGoal}
+              onDelete={deleteBudgetGoal}
+              onClose={() => setIsBudgetFormVisible(false)}
+          />
+        </Suspense>
       </AnimatedModal>
 
       <AnimatedModal isOpen={isPeopleManagerVisible} onClose={() => setIsPeopleManagerVisible(false)}>
-        <PeopleManager
-            people={people}
-            onAddPerson={addPerson}
-            onUpdatePerson={updatePerson}
-            onDeletePerson={deletePerson}
-            onClose={() => setIsPeopleManagerVisible(false)}
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <PeopleManager
+              people={people}
+              onAddPerson={addPerson}
+              onUpdatePerson={updatePerson}
+              onDeletePerson={deletePerson}
+              onClose={() => setIsPeopleManagerVisible(false)}
+          />
+        </Suspense>
       </AnimatedModal>
 
       <AnimatedModal isOpen={isSubscriptionManagerVisible} onClose={() => setIsSubscriptionManagerVisible(false)}>
-        <SubscriptionManager
-            transactions={transactions}
-            onCancelSubscription={cancelSubscription}
-            onClose={() => setIsSubscriptionManagerVisible(false)}
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <SubscriptionManager
+              transactions={transactions}
+              onCancelSubscription={cancelSubscription}
+              onClose={() => setIsSubscriptionManagerVisible(false)}
+          />
+        </Suspense>
       </AnimatedModal>
 
       <AnimatedModal isOpen={isCategoryManagerVisible} onClose={() => setIsCategoryManagerVisible(false)}>
-        <CategoryTagManager
-            customExpenseCategories={customExpenseCategories}
-            customIncomeCategories={customIncomeCategories}
-            tags={tags}
-            categoryIcons={categoryIcons}
-            categoryColors={categoryColors}
-            onAddCategory={addCustomCategory}
-            onDeleteCategory={deleteCustomCategory}
-            onSetCategoryIcon={setCategoryIcon}
-            onSetCategoryColor={setCategoryColor}
-            onDeleteTag={deleteTag}
-            onClose={() => setIsCategoryManagerVisible(false)}
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <CategoryTagManager
+              customExpenseCategories={customExpenseCategories}
+              customIncomeCategories={customIncomeCategories}
+              tags={tags}
+              categoryIcons={categoryIcons}
+              categoryColors={categoryColors}
+              onAddCategory={addCustomCategory}
+              onDeleteCategory={deleteCustomCategory}
+              onSetCategoryIcon={setCategoryIcon}
+              onSetCategoryColor={setCategoryColor}
+              onDeleteTag={deleteTag}
+              onClose={() => setIsCategoryManagerVisible(false)}
+          />
+        </Suspense>
       </AnimatedModal>
       
       <AnimatedModal isOpen={isResetDialogVisible} onClose={() => setIsResetDialogVisible(false)}>
-        <ConfirmationDialog
-          onClose={() => setIsResetDialogVisible(false)}
-          onConfirm={handleResetApp}
-          title="Confirm App Reset"
-          message="Are you sure you want to reset the application? All your data, including transactions, budgets, and settings, will be permanently deleted."
-        />
+        <Suspense fallback={<Loader isModal={true} />}>
+          <ConfirmationDialog
+            onClose={() => setIsResetDialogVisible(false)}
+            onConfirm={handleResetApp}
+            title="Confirm App Reset"
+            message="Are you sure you want to reset the application? All your data, including transactions, budgets, and settings, will be permanently deleted."
+          />
+        </Suspense>
       </AnimatedModal>
     </div>
   );
