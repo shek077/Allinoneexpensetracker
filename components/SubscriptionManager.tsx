@@ -93,7 +93,7 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ transactions,
   };
 
   return (
-    <NeumorphicCard className="w-full max-w-2xl">
+    <NeumorphicCard className="w-full max-w-2xl" glass>
         <div className="flex items-center justify-center gap-3 mb-6">
             <SubscriptionIcon className="w-7 h-7" />
             <h2 className="text-2xl font-bold text-center">Manage Subscriptions</h2>

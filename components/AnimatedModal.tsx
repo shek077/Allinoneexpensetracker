@@ -23,13 +23,13 @@ const AnimatedModal: React.FC<AnimatedModalProps> = ({ isOpen, onClose, children
     }, [isOpen]);
 
     const modalBgClass = {
-        light: 'bg-light-bg/80 backdrop-blur-sm',
-        dark: 'bg-dark-bg/80 backdrop-blur-sm',
-        lime: 'bg-lime-bg/80 backdrop-blur-sm',
-        rose: 'bg-rose-bg/80 backdrop-blur-sm',
-        ocean: 'bg-ocean-bg/80 backdrop-blur-sm',
-        tangerine: 'bg-tangerine-bg/80 backdrop-blur-sm',
-        lavender: 'bg-lavender-bg/80 backdrop-blur-sm',
+        light: 'bg-light-bg/80 backdrop-blur-md',
+        dark: 'bg-dark-bg/80 backdrop-blur-md',
+        lime: 'bg-lime-bg/80 backdrop-blur-md',
+        rose: 'bg-rose-bg/80 backdrop-blur-md',
+        ocean: 'bg-ocean-bg/80 backdrop-blur-md',
+        tangerine: 'bg-tangerine-bg/80 backdrop-blur-md',
+        lavender: 'bg-lavender-bg/80 backdrop-blur-md',
     }[theme];
 
     if (!isRendered) {

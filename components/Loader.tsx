@@ -38,7 +38,7 @@ const Loader: React.FC<LoaderProps> = ({ isModal = false }) => {
   if (isModal) {
       return (
          <div className="w-full max-w-lg">
-             <NeumorphicCard className="w-full h-64 flex justify-center items-center">
+             <NeumorphicCard className="w-full h-64 flex justify-center items-center" glass>
                  {spinner}
              </NeumorphicCard>
          </div>

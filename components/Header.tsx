@@ -208,7 +208,7 @@ const Header: React.FC = () => {
                     </button>
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-40 z-10 animate-scaleIn">
-                            <NeumorphicCard className="!p-2">
+                            <NeumorphicCard className="!p-2" glass>
                                 <ul className="space-y-1">
                                     {themes.map(({ name, icon }) => (
                                         <li key={name}>

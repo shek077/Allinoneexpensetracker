@@ -6,9 +6,10 @@ interface NeumorphicCardProps {
   className?: string;
   onClick?: () => void;
   type?: 'convex' | 'concave';
+  glass?: boolean;
 }
 
-const NeumorphicCard: React.FC<NeumorphicCardProps> = ({ children, className = '', onClick, type = 'convex' }) => {
+const NeumorphicCard: React.FC<NeumorphicCardProps> = ({ children, className = '', onClick, type = 'convex', glass = false }) => {
   const { theme } = useTheme();
 
   const themeShadows = {
@@ -51,6 +52,18 @@ const NeumorphicCard: React.FC<NeumorphicCardProps> = ({ children, className = '
     tangerine: 'active:shadow-neumorphic-concave-tangerine',
     lavender: 'active:shadow-neumorphic-concave-lavender',
   };
+  
+  const bgClasses = {
+    light: 'bg-light-bg',
+    dark: 'bg-dark-bg',
+    lime: 'bg-lime-bg',
+    rose: 'bg-rose-bg',
+    ocean: 'bg-ocean-bg',
+    tangerine: 'bg-tangerine-bg',
+    lavender: 'bg-lavender-bg',
+  };
+
+  const glassClasses = glass ? 'bg-opacity-60 backdrop-blur-lg border border-white/10' : '';
 
   const baseClasses = "rounded-2xl p-4 sm:p-6 transition-all duration-300";
   const shadowClass = themeShadows[theme][type];
@@ -58,7 +71,7 @@ const NeumorphicCard: React.FC<NeumorphicCardProps> = ({ children, className = '
 
   return (
     <div
-      className={`${baseClasses} ${shadowClass} ${interactiveClasses} ${className}`}
+      className={`${baseClasses} ${bgClasses[theme]} ${shadowClass} ${interactiveClasses} ${glassClasses} ${className}`}
       onClick={onClick}
     >
       {children}

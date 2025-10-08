@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -24,6 +23,7 @@ const PeopleManager = lazy(() => import('./components/PeopleManager'));
 const SubscriptionManager = lazy(() => import('./components/SubscriptionManager'));
 const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'));
 const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
+const CurrencyPrompt = lazy(() => import('./components/CurrencyPrompt'));
 
 
 const calculateNextPaymentDate = (transaction: Transaction): Date => {
@@ -63,6 +63,9 @@ const App: React.FC = () => {
   const [isSubscriptionManagerVisible, setIsSubscriptionManagerVisible] = useState(false);
   const [isCategoryManagerVisible, setIsCategoryManagerVisible] = useState(false);
   const [isResetDialogVisible, setIsResetDialogVisible] = useState(false);
+  const [isCurrencyPromptVisible, setIsCurrencyPromptVisible] = useState(false);
+  const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+
 
   // Custom Categories, Tags & Icons
   const [customExpenseCategories, setCustomExpenseCategories] = useLocalStorage<string[]>('customExpenseCategories', []);
@@ -73,7 +76,20 @@ const App: React.FC = () => {
 
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterDateRange, setFilterDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
-  const [filterCurrency, setFilterCurrency] = useLocalStorage<string>('filterCurrency', CURRENCIES[0].symbol);
+  
+  const [rememberCurrency, setRememberCurrency] = useLocalStorage<boolean>('rememberCurrency', true);
+  const [filterCurrency, _setFilterCurrency] = useState<string>(() => {
+    if (rememberCurrency) {
+        const item = window.localStorage.getItem('filterCurrency');
+        try {
+            return item ? JSON.parse(item) : CURRENCIES[0].symbol;
+        } catch {
+            return CURRENCIES[0].symbol;
+        }
+    }
+    return CURRENCIES[0].symbol;
+  });
+
   const [filterTaxStatus, setFilterTaxStatus] = useState<'all' | 'deductible' | 'non-deductible'>('all');
   const [filterTag, setFilterTag] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,6 +100,14 @@ const App: React.FC = () => {
   
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const triggeredAlertsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (rememberCurrency) {
+        window.localStorage.setItem('filterCurrency', JSON.stringify(filterCurrency));
+    } else {
+        window.localStorage.removeItem('filterCurrency');
+    }
+  }, [rememberCurrency, filterCurrency]);
 
   useEffect(() => {
     const lastCheck = localStorage.getItem('lastRecurringCheck');
@@ -153,6 +177,27 @@ const App: React.FC = () => {
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [transactions, filterCategory, filterDateRange, filterCurrency, filterTaxStatus, filterTag, searchTerm]);
+  
+  const requestCurrencyChange = useCallback((newCurrency: string) => {
+    if (newCurrency !== filterCurrency) {
+      setPendingCurrency(newCurrency);
+      setIsCurrencyPromptVisible(true);
+    }
+  }, [filterCurrency]);
+
+  const handleCurrencyChoice = useCallback((remember: boolean) => {
+    if (pendingCurrency) {
+      _setFilterCurrency(pendingCurrency);
+      setRememberCurrency(remember);
+    }
+    setIsCurrencyPromptVisible(false);
+    setPendingCurrency(null);
+  }, [pendingCurrency, setRememberCurrency]);
+
+  const handleCloseCurrencyPrompt = useCallback(() => {
+    setIsCurrencyPromptVisible(false);
+    setPendingCurrency(null);
+  }, []);
 
   const addTransaction = useCallback((transaction: Omit<Transaction, 'id'>) => {
     const newTransaction = { ...transaction, id: crypto.randomUUID() };
@@ -514,7 +559,7 @@ const App: React.FC = () => {
             filterDateRange={filterDateRange}
             setFilterDateRange={setFilterDateRange}
             filterCurrency={filterCurrency}
-            setFilterCurrency={setFilterCurrency}
+            onCurrencyChange={requestCurrencyChange}
             filterTaxStatus={filterTaxStatus}
             setFilterTaxStatus={setFilterTaxStatus}
             filterTag={filterTag}
@@ -555,6 +600,8 @@ const App: React.FC = () => {
             expenseCategories={combinedExpenseCategories}
             incomeCategories={combinedIncomeCategories}
             onAddTag={addTag}
+            currentGlobalCurrency={filterCurrency}
+            onCurrencyChange={requestCurrencyChange}
           />
         </Suspense>
       </AnimatedModal>
@@ -618,6 +665,17 @@ const App: React.FC = () => {
             title="Confirm App Reset"
             message="Are you sure you want to reset the application? All your data, including transactions, budgets, and settings, will be permanently deleted."
           />
+        </Suspense>
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={isCurrencyPromptVisible} onClose={handleCloseCurrencyPrompt}>
+        <Suspense fallback={<Loader isModal={true} />}>
+            <CurrencyPrompt
+                onClose={handleCloseCurrencyPrompt}
+                onConfirm={handleCurrencyChoice}
+                newCurrencySymbol={pendingCurrency || ''}
+                newCurrencyName={CURRENCIES.find(c => c.symbol === pendingCurrency)?.name || ''}
+            />
         </Suspense>
       </AnimatedModal>
     </div>

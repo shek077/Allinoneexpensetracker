@@ -13,6 +13,8 @@ interface TransactionFormProps {
   expenseCategories: string[];
   incomeCategories: string[];
   onAddTag: (tag: string) => void;
+  currentGlobalCurrency: string;
+  onCurrencyChange: (currency: string) => void;
 }
 
 const AmountIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -118,7 +120,17 @@ const ThemedNeumorphicSelect: React.FC<React.SelectHTMLAttributes<HTMLSelectElem
     );
 };
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, initialData, onClose, people, expenseCategories, incomeCategories, onAddTag }) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ 
+    onSubmit, 
+    initialData, 
+    onClose, 
+    people, 
+    expenseCategories, 
+    incomeCategories, 
+    onAddTag,
+    currentGlobalCurrency,
+    onCurrencyChange
+}) => {
   const { theme } = useTheme();
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || 'expense');
   const [amount, setAmount] = useState(initialData?.amount?.toString() || '');
@@ -127,7 +139,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, initialData
   const [description, setDescription] = useState(initialData?.description || '');
   const [notes, setNotes] = useState(initialData?.notes || '');
   const [recurring, setRecurring] = useState<'none' | 'daily' | 'weekly' | 'monthly'>(initialData?.recurring || 'none');
-  const [currency, setCurrency] = useState(initialData?.currency || CURRENCIES[0].symbol);
+  const [currency, setCurrency] = useState(initialData?.currency || currentGlobalCurrency);
   const [isTaxDeductible, setIsTaxDeductible] = useState(initialData?.isTaxDeductible || false);
   const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [currentTag, setCurrentTag] = useState('');
@@ -167,9 +179,25 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, initialData
           setSplitMethod(hasCustomAmounts ? 'custom' : 'equal');
           setCustomAmounts(initialData.splitDetails!.reduce((acc, detail) => ({ ...acc, [detail.personId]: detail.amount?.toString() || '' }), {}))
       }
-
+    } else {
+        // Reset form for new transaction
+        setType('expense');
+        setAmount('');
+        setCategory(expenseCategories[0]);
+        setDate(new Date().toISOString().split('T')[0]);
+        setDescription('');
+        setNotes('');
+        setRecurring('none');
+        setCurrency(currentGlobalCurrency);
+        setIsTaxDeductible(false);
+        setTags([]);
+        setIsSplit(false);
+        setPayer('user');
+        setInvolvedPeople(new Set(['user']));
+        setSplitMethod('equal');
+        setCustomAmounts({});
     }
-  }, [initialData]);
+  }, [initialData, currentGlobalCurrency, expenseCategories]);
   
   useEffect(() => {
     if (!categories.includes(category)) {
@@ -335,7 +363,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, initialData
 
   return (
     <div className="w-full max-w-lg">
-      <NeumorphicCard className="w-full">
+      <NeumorphicCard className="w-full" glass>
         <h2 className="text-2xl font-bold mb-6 text-center">{initialData ? 'Edit' : 'Add'} Transaction</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex rounded-xl p-1 gap-1">
@@ -355,7 +383,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, initialData
                   <CurrencyIcon className="w-5 h-5" />
                   <span>Currency</span>
               </label>
-              <ThemedNeumorphicSelect value={currency} onChange={e => setCurrency(e.target.value)}>
+              <ThemedNeumorphicSelect 
+                value={currency} 
+                onChange={e => {
+                    const newCurrency = e.target.value;
+                    setCurrency(newCurrency);
+                    onCurrencyChange(newCurrency);
+                }}>
                 {CURRENCIES.map(c => <option key={c.name} value={c.symbol}>{c.symbol} {c.name}</option>)}
               </ThemedNeumorphicSelect>
             </div>

@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import NeumorphicCard from './NeumorphicCard';
 import { Transaction } from '../types';
@@ -11,7 +12,7 @@ interface FiltersProps {
   filterDateRange: { start: string; end:string; };
   setFilterDateRange: (range: { start: string; end: string; }) => void;
   filterCurrency: string;
-  setFilterCurrency: (currency: string) => void;
+  onCurrencyChange: (currency: string) => void;
   filterTaxStatus: 'all' | 'deductible' | 'non-deductible';
   setFilterTaxStatus: (status: 'all' | 'deductible' | 'non-deductible') => void;
   filterTag: string;
@@ -90,7 +91,7 @@ const ResetIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-const ThemedNeumorphicInput: React.FC<React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement>> = ({ className, ...props }) => {
+const ThemedNeumorphicInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
     const { theme } = useTheme();
     const themeClasses = {
         light: 'bg-light-bg text-gray-700 shadow-neumorphic-concave focus:ring-primary-mint',
@@ -134,7 +135,7 @@ const ThemedNeumorphicSelect: React.FC<React.SelectHTMLAttributes<HTMLSelectElem
 const Filters: React.FC<FiltersProps> = ({ 
     filterCategory, setFilterCategory, 
     filterDateRange, setFilterDateRange,
-    filterCurrency, setFilterCurrency,
+    filterCurrency, onCurrencyChange,
     filterTaxStatus, setFilterTaxStatus,
     filterTag, setFilterTag,
     allTags,
@@ -212,7 +213,7 @@ const Filters: React.FC<FiltersProps> = ({
                   <CurrencyIcon className="w-5 h-5" />
                   <span>Currency</span>
               </label>
-              <ThemedNeumorphicSelect value={filterCurrency} onChange={(e) => setFilterCurrency(e.target.value)}>
+              <ThemedNeumorphicSelect value={filterCurrency} onChange={(e) => onCurrencyChange(e.target.value)}>
                   {CURRENCIES.map(c => <option key={c.name} value={c.symbol}>{c.symbol} {c.name}</option>)}
               </ThemedNeumorphicSelect>
           </div>

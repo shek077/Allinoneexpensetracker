@@ -49,7 +49,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ onClose, onConf
   };
 
   return (
-      <NeumorphicCard className="w-full max-w-sm">
+      <NeumorphicCard className="w-full max-w-sm" glass>
         <h2 className="text-xl font-bold mb-4 text-center">{title}</h2>
         <p className="text-center mb-6">{message}</p>
         <div className="flex gap-4">

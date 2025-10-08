@@ -186,7 +186,7 @@ const CategoryTagManager: React.FC<CategoryTagManagerProps> = ({
   };
 
   return (
-    <NeumorphicCard className="w-full max-w-2xl">
+    <NeumorphicCard className="w-full max-w-2xl" glass>
         <h2 className="text-2xl font-bold text-center mb-6">Manage Categories & Tags</h2>
 
         <div className="flex rounded-xl p-1 gap-1 mb-6">

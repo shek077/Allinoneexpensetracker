@@ -139,7 +139,7 @@ const BudgetGoals: React.FC<BudgetGoalsProps> = ({ budgetGoals, onSave, onDelete
 
   return (
     <>
-      <NeumorphicCard className="w-full max-w-lg">
+      <NeumorphicCard className="w-full max-w-lg" glass>
           <div className="flex items-center justify-center gap-3 mb-6">
               <TargetIcon className="w-7 h-7" />
               <h2 className="text-2xl font-bold text-center">Manage Budgets</h2>

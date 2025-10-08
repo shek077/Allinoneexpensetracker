@@ -108,7 +108,7 @@ const PeopleManager: React.FC<PeopleManagerProps> = ({ people, onAddPerson, onUp
   };
 
   return (
-    <NeumorphicCard className="w-full max-w-md">
+    <NeumorphicCard className="w-full max-w-md" glass>
         <div className="flex items-center justify-center gap-3 mb-6">
             <PeopleIcon className="w-7 h-7" />
             <h2 className="text-2xl font-bold text-center">Manage People</h2>

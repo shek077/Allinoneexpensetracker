@@ -68,7 +68,7 @@ const AlertItem: React.FC<{ alert: Alert; onDismiss: (id: string) => void }> = (
   const details = getAlertDetails();
 
   return (
-    <NeumorphicCard className="w-full max-w-sm p-4 flex items-start gap-4 animate-fade-in-right">
+    <NeumorphicCard className="w-full max-w-sm p-4 flex items-start gap-4 animate-fade-in-right" glass>
       <div className={`flex-shrink-0 ${details.color}`}>
         {details.icon}
       </div>
