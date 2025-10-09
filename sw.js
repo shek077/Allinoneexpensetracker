@@ -5,54 +5,55 @@ const CACHE_NAME = 'expense-tracker-cache-v3';
 // A comprehensive list of all assets needed for the app to run offline.
 const URLS_TO_CACHE = [
   // App Shell
-  '/',
-  '/index.html',
-  '/manifest.json',
+  './',
+  'index.html',
+  'manifest.json',
 
   // Icons
-  '/icons/icon-48x48.png',
-  '/icons/icon-72x72.png',
-  '/icons/icon-96x96.png',
-  '/icons/icon-128x128.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  'icons/icon-48x48.png',
+  'icons/icon-72x72.png',
+  'icons/icon-96x96.png',
+  'icons/icon-128x128.png',
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png',
 
   // Scripts - All TS/TSX files that are part of the module graph
-  '/index.tsx',
-  '/App.tsx',
-  '/types.ts',
-  '/constants.ts',
-  '/hooks/useLocalStorage.ts',
-  '/hooks/useTheme.tsx',
-  '/services/pdfGenerator.ts',
-  '/services/rippleEffect.ts',
-  '/components/NeumorphicCard.tsx',
-  '/components/Header.tsx',
-  '/components/Summary.tsx',
-  '/components/Charts.tsx',
-  '/components/Filters.tsx',
-  '/components/TransactionList.tsx',
-  '/components/TransactionItem.tsx',
-  '/components/TransactionForm.tsx',
-  '/components/BudgetProgress.tsx',
-  '/components/BudgetGoals.tsx',
-  '/components/ConfirmationDialog.tsx',
-  '/components/Alerts.tsx',
-  '/components/UpcomingSubscriptions.tsx',
-  '/components/SubscriptionManager.tsx',
-  '/components/Balances.tsx',
-  '/components/PeopleManager.tsx',
-  '/components/CategoryTagManager.tsx',
-  '/components/AnimatedModal.tsx',
-  '/components/Loader.tsx',
+  'index.tsx',
+  'App.tsx',
+  'types.ts',
+  'constants.ts',
+  'hooks/useLocalStorage.ts',
+  'hooks/useTheme.tsx',
+  'services/pdfGenerator.ts',
+  'services/rippleEffect.ts',
+  'components/NeumorphicCard.tsx',
+  'components/Header.tsx',
+  'components/Summary.tsx',
+  'components/Charts.tsx',
+  'components/Filters.tsx',
+  'components/TransactionList.tsx',
+  'components/TransactionItem.tsx',
+  'components/TransactionForm.tsx',
+  'components/BudgetProgress.tsx',
+  'components/BudgetGoals.tsx',
+  'components/ConfirmationDialog.tsx',
+  'components/Alerts.tsx',
+  'components/UpcomingSubscriptions.tsx',
+  'components/SubscriptionManager.tsx',
+  'components/Balances.tsx',
+  'components/PeopleManager.tsx',
+  'components/CategoryTagManager.tsx',
+  'components/AnimatedModal.tsx',
+  'components/Loader.tsx',
+  'components/CurrencyPrompt.tsx',
 
   // CDN URLs
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-  'https://aistudiocdn.com/react@^19.1.1',
-  'https://aistudiocdn.com/react-dom@^19.1.1/client',
-  'https://aistudiocdn.com/react@^19.1.1/jsx-runtime',
-  'https://aistudiocdn.com/recharts@^3.2.1',
+  'https://esm.sh/react@19.0.0-rc.0',
+  'https://esm.sh/react-dom@19.0.0-rc.0/client',
+  'https://esm.sh/react@19.0.0-rc.0/jsx-runtime',
+  'https://esm.sh/recharts@^3.2.1',
 
   // Google Fonts (ensure these match index.html)
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
@@ -107,7 +108,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // Use cache-first for versioned CDN assets and fonts for stability
-  if (url.hostname === 'aistudiocdn.com' || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'fonts.gstatic.com') {
+  if (url.hostname === 'esm.sh' || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'fonts.gstatic.com') {
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
         return cachedResponse || fetch(event.request).then(networkResponse => {

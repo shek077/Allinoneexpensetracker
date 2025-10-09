@@ -43,3 +43,10 @@ export interface SplitDetail {
     personId: 'user' | string; // 'user' or personId
     amount?: number; // Optional, if not present, assumed equal split
 }
+
+export interface DashboardSettings {
+  showIncome: boolean;
+  showExpenses: boolean;
+  showDeductible: boolean;
+  showBalance: boolean;
+}

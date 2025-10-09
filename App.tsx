@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
-import { Transaction, BudgetGoal, Alert, Person } from './types';
+import { Transaction, BudgetGoal, Alert, Person, DashboardSettings } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTheme } from './hooks/useTheme';
 import Header from './components/Header';
@@ -14,6 +14,8 @@ import { CURRENCIES, INCOME_CATEGORIES, EXPENSE_CATEGORIES } from './constants';
 import AnimatedModal from './components/AnimatedModal';
 import Loader from './components/Loader';
 import Alerts from './components/Alerts';
+import NeumorphicCard from './components/NeumorphicCard';
+import { createGlobalRipple } from './services/rippleEffect';
 
 // Lazy load components for code-splitting and better performance
 const Charts = lazy(() => import('./components/Charts'));
@@ -24,6 +26,84 @@ const SubscriptionManager = lazy(() => import('./components/SubscriptionManager'
 const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'));
 const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
 const CurrencyPrompt = lazy(() => import('./components/CurrencyPrompt'));
+
+// --- Dashboard Settings Modal Component ---
+interface DashboardSettingsModalProps {
+  settings: DashboardSettings;
+  onSettingsChange: (settings: DashboardSettings) => void;
+  onClose: () => void;
+}
+
+const SettingsIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+
+const DashboardSettingsModal: React.FC<DashboardSettingsModalProps> = ({ settings, onSettingsChange, onClose }) => {
+  const { theme } = useTheme();
+
+  const handleToggle = (key: keyof DashboardSettings) => {
+    onSettingsChange({ ...settings, [key]: !settings[key] });
+  };
+  
+  const buttonThemeClasses = {
+      light: { default: 'shadow-neumorphic-convex active:shadow-neumorphic-concave' },
+      dark: { default: 'shadow-neumorphic-convex-dark active:shadow-neumorphic-concave-dark' },
+      lime: { default: 'shadow-neumorphic-convex-lime active:shadow-neumorphic-concave-lime' },
+      rose: { default: 'shadow-neumorphic-convex-rose active:shadow-neumorphic-concave-rose' },
+      ocean: { default: 'shadow-neumorphic-convex-ocean active:shadow-neumorphic-concave-ocean' },
+      tangerine: { default: 'shadow-neumorphic-convex-tangerine active:shadow-neumorphic-concave-tangerine' },
+      lavender: { default: 'shadow-neumorphic-convex-lavender active:shadow-neumorphic-concave-lavender' }
+  };
+  
+  const widgetOptions: { key: keyof DashboardSettings, label: string }[] = [
+      { key: 'showIncome', label: 'Total Income' },
+      { key: 'showExpenses', label: 'Total Expenses' },
+      { key: 'showDeductible', label: 'Deductible Expenses' },
+      { key: 'showBalance', label: 'Balance' }
+  ];
+
+  return (
+    <NeumorphicCard className="w-full max-w-md" glass>
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <SettingsIcon className="w-7 h-7" />
+        <h2 className="text-2xl font-bold text-center">Customize Dashboard</h2>
+      </div>
+      
+      <div className="space-y-4 mb-6">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">Select which summary widgets to display.</p>
+          {widgetOptions.map(({ key, label }) => (
+            <NeumorphicCard type="concave" key={key} className="!p-3">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="font-semibold">{label}</span>
+                <div className="relative inline-flex items-center">
+                    <input 
+                        type="checkbox" 
+                        checked={settings[key]} 
+                        onChange={() => handleToggle(key)} 
+                        className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-mint"></div>
+                </div>
+              </label>
+            </NeumorphicCard>
+          ))}
+      </div>
+      
+      <div className="flex justify-center pt-4">
+        <button 
+          type="button" 
+          onClick={(e) => { createGlobalRipple(e); onClose(); }} 
+          className={`w-full max-w-xs font-bold py-3 px-4 rounded-xl transform active:scale-95 transition-all duration-200 ${buttonThemeClasses[theme].default}`}
+        >
+          Done
+        </button>
+      </div>
+    </NeumorphicCard>
+  );
+};
 
 
 const calculateNextPaymentDate = (transaction: Transaction): Date => {
@@ -65,6 +145,14 @@ const App: React.FC = () => {
   const [isResetDialogVisible, setIsResetDialogVisible] = useState(false);
   const [isCurrencyPromptVisible, setIsCurrencyPromptVisible] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+
+  const [dashboardSettings, setDashboardSettings] = useLocalStorage<DashboardSettings>('dashboardSettings', {
+    showIncome: true,
+    showExpenses: true,
+    showDeductible: true,
+    showBalance: true,
+  });
+  const [isDashboardSettingsVisible, setIsDashboardSettingsVisible] = useState(false);
 
 
   // Custom Categories, Tags & Icons
@@ -533,7 +621,7 @@ const App: React.FC = () => {
         <Header />
         <main className="space-y-8">
           <div ref={reportRef} className={`p-4 sm:p-6 rounded-2xl ${reportBgClass}`}>
-            <Summary transactions={filteredTransactions} currency={filterCurrency} />
+            <Summary transactions={filteredTransactions} currency={filterCurrency} settings={dashboardSettings} />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
                 <div className="lg:col-span-2">
                      {budgetGoals.length > 0 && (
@@ -573,6 +661,7 @@ const App: React.FC = () => {
             onShowPeopleManager={() => setIsPeopleManagerVisible(true)}
             onShowSubscriptionManager={() => setIsSubscriptionManagerVisible(true)}
             onShowCategoryManager={() => setIsCategoryManagerVisible(true)}
+            onShowDashboardSettings={() => setIsDashboardSettingsVisible(true)}
             onShowResetDialog={() => setIsResetDialogVisible(true)}
           />
           <TransactionList 
@@ -675,6 +764,16 @@ const App: React.FC = () => {
                 onConfirm={handleCurrencyChoice}
                 newCurrencySymbol={pendingCurrency || ''}
                 newCurrencyName={CURRENCIES.find(c => c.symbol === pendingCurrency)?.name || ''}
+            />
+        </Suspense>
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={isDashboardSettingsVisible} onClose={() => setIsDashboardSettingsVisible(false)}>
+        <Suspense fallback={<Loader isModal={true} />}>
+            <DashboardSettingsModal
+                settings={dashboardSettings}
+                onSettingsChange={setDashboardSettings}
+                onClose={() => setIsDashboardSettingsVisible(false)}
             />
         </Suspense>
       </AnimatedModal>

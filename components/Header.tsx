@@ -75,39 +75,33 @@ const InstallIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-
 const Header: React.FC = () => {
     const { theme, setTheme } = useTheme();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [installPrompt, setInstallPrompt] = useState<any>(null);
+    const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
 
     useEffect(() => {
-        const handler = (e: Event) => {
+        const handleBeforeInstallPrompt = (e: Event) => {
             e.preventDefault();
             setInstallPrompt(e);
         };
 
-        window.addEventListener('beforeinstallprompt', handler);
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
         return () => {
-            window.removeEventListener('beforeinstallprompt', handler);
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         };
     }, []);
 
-    const handleInstallClick = () => {
+    const handleInstallClick = async () => {
         if (!installPrompt) {
             return;
         }
-        installPrompt.prompt();
-        installPrompt.userChoice.then((choiceResult: { outcome: 'accepted' | 'dismissed' }) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the A2HS prompt');
-            } else {
-                console.log('User dismissed the A2HS prompt');
-            }
-            setInstallPrompt(null);
-        });
+        // The type for installPrompt is just Event, but it has a prompt() method.
+        // Cast to any to avoid TypeScript errors.
+        await (installPrompt as any).prompt();
+        setInstallPrompt(null);
     };
 
     // FIX: Changed JSX.Element to React.ReactElement to resolve "Cannot find namespace 'JSX'" error.
@@ -182,7 +176,7 @@ const Header: React.FC = () => {
                 Expense<span className={currentThemeConfig.titleAccent}>Tracker</span>
             </h1>
             <div className="flex items-center gap-4">
-                 {installPrompt && (
+                {installPrompt && (
                     <button
                         onClick={(e) => {
                             createGlobalRipple(e);

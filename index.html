@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neumorphic Expense Tracker</title>
     <meta name="theme-color" content="#e0e5ec" id="theme-color-meta" />
-    <link rel="manifest" href="/manifest.json" />
-
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+    
     <!-- Font Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,16 +180,16 @@
   <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "recharts": "https://aistudiocdn.com/recharts@^3.2.1"
+    "react": "https://esm.sh/react@19.0.0-rc.0",
+    "react-dom/": "https://esm.sh/react-dom@19.0.0-rc.0/",
+    "react/": "https://esm.sh/react@19.0.0-rc.0/",
+    "recharts": "https://esm.sh/recharts@^3.2.1"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
