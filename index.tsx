@@ -36,18 +36,11 @@ const registerServiceWorker = () => {
   }
 };
 
-// To prevent race conditions and "invalid state" errors, especially in sandboxed
-// environments, we ensure the document is fully stable before registering.
-// A small timeout helps sidestep transient states that can occur immediately
-// after the 'load' event.
-const safelyRegister = () => {
-    setTimeout(registerServiceWorker, 100);
-};
-
-// Check if the document is already loaded. If it is, register immediately (after a brief timeout).
-// Otherwise, wait for the 'load' event. This covers all timing scenarios.
+// To prevent "invalid state" errors, we register the service worker only after
+// the page has fully loaded. This standard pattern handles cases where the
+// script runs before or after the 'load' event has fired.
 if (document.readyState === 'complete') {
-  safelyRegister();
+  registerServiceWorker();
 } else {
-  window.addEventListener('load', safelyRegister);
+  window.addEventListener('load', registerServiceWorker);
 }
