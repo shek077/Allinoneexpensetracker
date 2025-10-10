@@ -17,13 +17,15 @@ root.render(
   </React.StrictMode>
 );
 
-// Register the service worker for PWA functionality
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    // In sandboxed environments, trying to construct a full URL can be unreliable
-    // due to invalid base URLs (e.g., from `import.meta.url` or `window.location`).
-    // Using an absolute path from the origin's root is the most robust solution.
-    navigator.serviceWorker.register('/sw.js')
+// --- Service Worker Registration ---
+
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    // In sandboxed environments, relative paths for service workers can be resolved
+    // against an incorrect origin. To fix this, we construct an absolute URL
+    // using `window.location.origin` to ensure the correct path.
+    const swUrl = `${window.location.origin}/sw.js`;
+    navigator.serviceWorker.register(swUrl)
       .then(registration => {
         console.log('Service Worker registered successfully.');
         console.log('Service Worker scope:', registration.scope);
@@ -31,5 +33,21 @@ if ('serviceWorker' in navigator) {
       .catch(err => {
         console.error('Service Worker registration failed:', err);
       });
-  });
+  }
+};
+
+// To prevent race conditions and "invalid state" errors, especially in sandboxed
+// environments, we ensure the document is fully stable before registering.
+// A small timeout helps sidestep transient states that can occur immediately
+// after the 'load' event.
+const safelyRegister = () => {
+    setTimeout(registerServiceWorker, 100);
+};
+
+// Check if the document is already loaded. If it is, register immediately (after a brief timeout).
+// Otherwise, wait for the 'load' event. This covers all timing scenarios.
+if (document.readyState === 'complete') {
+  safelyRegister();
+} else {
+  window.addEventListener('load', safelyRegister);
 }
