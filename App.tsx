@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person, DashboardSettings } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -26,6 +27,47 @@ const SubscriptionManager = lazy(() => import('./components/SubscriptionManager'
 const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'));
 const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
 const CurrencyPrompt = lazy(() => import('./components/CurrencyPrompt'));
+
+// --- Ad Component ---
+const AdUnit: React.FC = () => {
+    const adRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // We only want to run this once, and only if the ad hasn't been loaded.
+        if (adRef.current && adRef.current.children.length === 0) {
+            const adContainer = adRef.current;
+
+            const configScript = document.createElement('script');
+            configScript.type = 'text/javascript';
+            configScript.innerText = `
+                atOptions = {
+                    'key' : 'ba3af4c2ceb96dac053d999bd9ba6d8b',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            `;
+            adContainer.appendChild(configScript);
+            
+            const invokeScript = document.createElement('script');
+            invokeScript.type = 'text/javascript';
+            invokeScript.src = "//www.highperformanceformat.com/ba3af4c2ceb96dac053d999bd9ba6d8b/invoke.js";
+            adContainer.appendChild(invokeScript);
+        }
+    }, []);
+
+    return (
+        <div className="flex justify-center my-8 max-w-full overflow-x-auto" aria-label="Advertisement">
+            <NeumorphicCard className="!p-0 w-[728px] h-[90px] overflow-hidden flex-shrink-0">
+                <div ref={adRef} className="w-full h-full flex items-center justify-center text-sm text-gray-500">
+                    {/* Advertisement loads here */}
+                </div>
+            </NeumorphicCard>
+        </div>
+    );
+};
+
 
 // --- Dashboard Settings Modal Component ---
 interface DashboardSettingsModalProps {
@@ -674,6 +716,9 @@ const App: React.FC = () => {
                 <Charts transactions={filteredTransactions} categoryColors={categoryColors} />
             </Suspense>
           </div>
+          
+          <AdUnit />
+
           <Filters 
             filterCategory={filterCategory}
             setFilterCategory={setFilterCategory}
