@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person, DashboardSettings } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -232,37 +233,24 @@ const App: React.FC = () => {
   const triggeredAlertsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // --- Service Worker Registration ---
-    // To fix the "document is in an invalid state" error, we use a robust registration strategy.
-    // This code runs inside a useEffect hook to ensure the React component tree is mounted.
-    // It then explicitly waits for the window's 'load' event, which signals that the document
-    // and all its resources are fully available and stable.
-    const registerServiceWorker = () => {
-      if ('serviceWorker' in navigator) {
-        // We use an absolute URL to avoid path resolution issues in sandboxed environments.
-        const swUrl = `${window.location.origin}/sw.js`;
-        navigator.serviceWorker.register(swUrl)
-          .then(registration => {
-            console.log('Service Worker registered successfully with scope:', registration.scope);
-          })
-          .catch(err => {
-            console.error('Service Worker registration failed:', err);
-          });
-      }
-    };
+    if ('serviceWorker' in navigator) {
+      const registerServiceWorker = async () => {
+        try {
+          await navigator.serviceWorker.register('/sw.js');
+          console.log('Service Worker registered successfully.');
+        } catch (error) {
+          console.error('Service Worker registration failed:', error);
+        }
+      };
 
-    // The 'load' event might have already fired by the time this effect runs.
-    // We check the document's readyState to handle this case.
-    if (document.readyState === 'complete') {
-      registerServiceWorker();
-    } else {
+      // Delay registration until after the page has fully loaded
       window.addEventListener('load', registerServiceWorker);
-      // Cleanup the event listener if the component unmounts before the 'load' event.
+      
       return () => {
         window.removeEventListener('load', registerServiceWorker);
       };
     }
-  }, []); // The empty dependency array ensures this runs only once on mount.
+  }, []);
 
   useEffect(() => {
     if (rememberCurrency) {
