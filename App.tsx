@@ -696,7 +696,7 @@ const App: React.FC = () => {
                      )}
                 </div>
                 <div className="space-y-8">
-                    <Balances balances={balances} people={people} onSettleUp={handleSettleUp} />
+                    <Balances balances={balances} people={people} onSettleUp={handleSettleUp} currency={filterCurrency} />
                     <UpcomingSubscriptions transactions={transactions} currency={filterCurrency} />
                 </div>
             </div>
@@ -768,6 +768,7 @@ const App: React.FC = () => {
               onSave={addOrUpdateBudgetGoal}
               onDelete={deleteBudgetGoal}
               onClose={() => setIsBudgetFormVisible(false)}
+              currency={filterCurrency}
           />
         </Suspense>
       </AnimatedModal>

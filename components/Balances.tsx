@@ -12,6 +12,7 @@ interface BalancesProps {
     balances: Balance[];
     people: Person[];
     onSettleUp: (personId: string, amount: number) => void;
+    currency: string;
 }
 
 const BalancesIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -40,7 +41,7 @@ const PersonIcon: React.FC<{ person: Balance, colorClass: string }> = ({ person,
     );
 };
 
-const Balances: React.FC<BalancesProps> = ({ balances, onSettleUp }) => {
+const Balances: React.FC<BalancesProps> = ({ balances, onSettleUp, currency }) => {
     const { theme } = useTheme();
 
     const buttonThemeClasses = {
@@ -74,7 +75,7 @@ const Balances: React.FC<BalancesProps> = ({ balances, onSettleUp }) => {
                                         <PersonIcon person={p} colorClass="text-red-500" />
                                         <span>{p.name}</span>
                                     </div>
-                                    <span className="font-bold text-red-500">${Math.abs(p.balance).toFixed(2)}</span>
+                                    <span className="font-bold text-red-500">{currency}{Math.abs(p.balance).toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
@@ -91,7 +92,7 @@ const Balances: React.FC<BalancesProps> = ({ balances, onSettleUp }) => {
                                         <span>{p.name}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-green-500">${p.balance.toFixed(2)}</span>
+                                        <span className="font-bold text-green-500">{currency}{p.balance.toFixed(2)}</span>
                                         <button onClick={(e) => { createGlobalRipple(e); onSettleUp(p.id, p.balance); }} className={`px-2 py-0.5 text-xs rounded-md ${buttonThemeClasses[theme]}`}>
                                             Settle
                                         </button>

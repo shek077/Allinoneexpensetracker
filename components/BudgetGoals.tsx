@@ -12,6 +12,7 @@ interface BudgetGoalsProps {
   onSave: (goal: Omit<BudgetGoal, 'id'>) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
+  currency: string;
 }
 
 const TargetIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -32,7 +33,7 @@ const AmountIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
-const ThemedNeumorphicInput: React.FC<React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement>> = ({ className, ...props }) => {
+const ThemedNeumorphicInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
     const { theme } = useTheme();
     const themeClasses = {
         light: 'bg-light-bg text-gray-700 shadow-neumorphic-concave focus:ring-primary-mint',
@@ -79,7 +80,7 @@ const DeleteIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 
-const BudgetGoals: React.FC<BudgetGoalsProps> = ({ budgetGoals, onSave, onDelete, onClose }) => {
+const BudgetGoals: React.FC<BudgetGoalsProps> = ({ budgetGoals, onSave, onDelete, onClose, currency }) => {
   const { theme } = useTheme();
   const [category, setCategory] = useState(EXPENSE_CATEGORIES[0]);
   const [amount, setAmount] = useState('');
@@ -150,7 +151,7 @@ const BudgetGoals: React.FC<BudgetGoalsProps> = ({ budgetGoals, onSave, onDelete
                   <NeumorphicCard type="concave" key={goal.id} className="!p-3 flex justify-between items-center">
                       <div>
                           <p className="font-semibold">{goal.category}</p>
-                          <p className="text-lg font-bold">${goal.amount.toFixed(2)}</p>
+                          <p className="text-lg font-bold">{currency}{goal.amount.toFixed(2)}</p>
                       </div>
                       <button onClick={(e) => { createGlobalRipple(e); handleRequestDelete(goal); }} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label={`Delete ${goal.category} budget`}>
                          <DeleteIcon className="w-5 h-5 text-red-500" />
