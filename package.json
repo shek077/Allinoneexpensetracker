@@ -1,22 +1,21 @@
 {
   "name": "allinoneexpensetracker",
+  "version": "1.0.0",
+  "description": "A modern, full-featured expense tracker web app with a neumorphic design. It allows users to manage income and expenses, view financial reports with charts, and export data to PDF. The app is fully responsive and supports light/dark themes.",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "esbuild index.tsx --bundle --outfile=dist/index.js --jsx=automatic --loader:.ts=tsx --resolve-extensions=.ts,.tsx,.js,.json && copyfiles -u 1 public/**/* dist && copyfiles index.html manifest.json sw.js dist"
   },
   "dependencies": {
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "recharts": "^2.12.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.5"
   }
 }

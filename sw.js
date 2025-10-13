@@ -1,55 +1,21 @@
-// Versioned cache name to help manage updates
-const CACHE_NAME = 'pwa-cache-v1';
+// A minimal service worker to enable PWA installability.
+// It does not cache any assets, making the app online-only.
 
-// Files to cache (adjust paths if needed)
-const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
-];
-
-// Install service worker and cache app shell
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching app shell...');
-      return cache.addAll(FILES_TO_CACHE);
-    })
-  );
-  self.skipWaiting();
+  // The install event is fired when the service worker is first installed.
+  // We don't need to do anything here for an online-only app.
+  console.log('Service Worker: Installed');
 });
 
-// Activate and remove old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
-  event.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[Service Worker] Removing old cache', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    })
-  );
-  self.clients.claim();
+  // The activate event is fired when the service worker becomes active.
+  // We don't need to do anything here for an online-only app.
+  console.log('Service Worker: Activated');
 });
 
-// Fetch handler - serve cached content when offline
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return (
-        response ||
-        fetch(event.request).catch(() =>
-          caches.match('/index.html') // fallback if offline
-        )
-      );
-    })
-  );
+  // The fetch event is fired for every network request.
+  // We don't intercept the request and just let it fall through to the network.
+  // This ensures the app remains online-only.
+  return;
 });
