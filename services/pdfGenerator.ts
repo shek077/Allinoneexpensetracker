@@ -1,7 +1,11 @@
-
 // Use global variables from CDNs
 declare const html2canvas: any;
 declare const jspdf: any;
+
+// Declare the Android interface so TypeScript knows it exists.
+declare const Android: {
+    savePDF(base64Data: string): void;
+};
 
 export const generatePdf = (element: HTMLElement, fileName: string): void => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -20,8 +24,17 @@ export const generatePdf = (element: HTMLElement, fileName: string): void => {
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    pdf.save(`${fileName}.pdf`);
+
+    // --- This is the new logic ---
+    if (typeof Android !== 'undefined' && Android.savePDF) {
+        // If the Android interface is available, get the data URI and send it to the native app.
+        const pdfDataUri = pdf.output('datauristring');
+        Android.savePDF(pdfDataUri);
+    } else {
+        // If not in the Android app, fall back to the default browser download.
+        pdf.save(`${fileName}.pdf`);
+    }
+
   }).catch((error: Error) => {
       console.error("Error generating PDF:", error);
   });
