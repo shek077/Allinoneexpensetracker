@@ -2,19 +2,19 @@
 declare const html2canvas: any;
 declare const jspdf: any;
 
-// Declare the Android interface so TypeScript knows it exists.
+// Declare the full Android streaming interface
 declare const Android: {
-    savePDF(base64Data: string): void;
+    openFileStream(mimeType: string, fileName: string): void;
+    appendToFile(base64Chunk: string): void;
+    closeFileStream(): void;
 };
 
 export const generatePdf = (element: HTMLElement, fileName: string): void => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   html2canvas(element, { 
       useCORS: true, 
       backgroundColor: window.getComputedStyle(document.body).backgroundColor 
   }).then((canvas: HTMLCanvasElement) => {
     const imgData = canvas.toDataURL('image/png');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     const pdf = new jspdf.jsPDF({
       orientation: 'portrait',
       unit: 'pt',
@@ -22,16 +22,30 @@ export const generatePdf = (element: HTMLElement, fileName: string): void => {
     });
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-    // --- This is the new logic ---
-    if (typeof Android !== 'undefined' && Android.savePDF) {
-        // If the Android interface is available, get the data URI and send it to the native app.
-        const pdfDataUri = pdf.output('datauristring');
-        Android.savePDF(pdfDataUri);
+    // --- THE DEFINITIVE FIX ---
+    if (typeof Android !== 'undefined' && Android.openFileStream) {
+        // App environment: Use the streaming interface
+        const finalFileName = `${fileName}.pdf`;
+        // Get the entire PDF as a Base64 string, but without the data URI prefix
+        const pureBase64 = pdf.output('datauristring').substring(pdf.output('datauristring').indexOf(',') + 1);
+        const chunkSize = 1024 * 64; // 64KB chunks
+
+        // 1. Tell Android to open the file for writing
+        Android.openFileStream('application/pdf', finalFileName);
+
+        // 2. Send the file in small chunks
+        for (let i = 0; i < pureBase64.length; i += chunkSize) {
+            const chunk = pureBase64.substring(i, i + chunkSize);
+            Android.appendToFile(chunk);
+        }
+
+        // 3. Tell Android to close the file
+        Android.closeFileStream();
+
     } else {
-        // If not in the Android app, fall back to the default browser download.
+        // Browser environment: Fall back to the default download
         pdf.save(`${fileName}.pdf`);
     }
 
