@@ -1,1 +1,11 @@
 
+    [{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.allinoneexpensetracker.twa",
+        "sha256_cert_fingerprints":
+        ["A4:2F:A9:82:6A:B7:20:44:F2:57:98:73:C3:DA:8F:C2:6E:76:DB:F0:44:A0:4B:BF:F4:08:DE:74:8A:9C:8A:5C"]
+      }
+    }]
+    
