@@ -192,6 +192,18 @@ const App: React.FC = () => {
   const triggeredAlertsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    const splashScreen = document.getElementById('splash-screen');
+    if (splashScreen) {
+      // Hide splash screen after a delay to ensure it's visible
+      const timer = setTimeout(() => {
+        splashScreen.classList.add('splash-screen--hidden');
+      }, 1200); // Animation takes ~1.1s, so this gives a brief moment to see it.
+
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    }
+  }, []);
+
+  useEffect(() => {
     if ('serviceWorker' in navigator) {
       const registerServiceWorker = async () => {
         try {
