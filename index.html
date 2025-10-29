@@ -8,11 +8,27 @@
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
     
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme');
+          if (theme) {
+            const activeTheme = JSON.parse(theme);
+            document.documentElement.classList.add(activeTheme);
+          } else {
+            document.documentElement.classList.add('light');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
+    
     <!-- Font Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
     
     <!-- Pre-compiled Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -173,6 +189,73 @@
         border: none;
         border-radius: 50%;
       }
+      
+      /* --- START OF SPLASH SCREEN STYLES --- */
+      #splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      #splash-screen.splash-screen--hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+      
+      #splash-screen .splash-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        overflow: hidden;
+      }
+      
+      #splash-screen .splash-title span {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(100%);
+        animation: title-reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      }
+
+      #splash-screen .splash-title span:first-child {
+        animation-delay: 0.1s;
+      }
+      #splash-screen .splash-title span:last-child {
+        animation-delay: 0.3s;
+        margin-left: 0.5rem;
+      }
+      
+      /* Theme-adaptive styles for the splash screen */
+      :root.light #splash-screen { background-color: #e0e5ec; color: #4A5568; }
+      :root.light .splash-title-accent { color: #66DDAA; }
+
+      :root.dark #splash-screen { background-color: #2c3038; color: #A0AEC0; }
+      :root.dark .splash-title-accent { color: #66DDAA; }
+
+      :root.lime #splash-screen { background-color: #f0f2eb; color: #4a5551; }
+      :root.lime .splash-title-accent { color: #a8c97f; }
+
+      :root.rose #splash-screen { background-color: #fbe9e7; color: #5d4037; }
+      :root.rose .splash-title-accent { color: #e91e63; }
+
+      :root.ocean #splash-screen { background-color: #e6f0f5; color: #3a506b; }
+      :root.ocean .splash-title-accent { color: #00b4d8; }
+
+      :root.tangerine #splash-screen { background-color: #fff0e6; color: #6b4f4f; }
+      :root.tangerine .splash-title-accent { color: #ff6b35; }
+
+      :root.lavender #splash-screen { background-color: #f3eef7; color: #594b61; }
+      :root.lavender .splash-title-accent { color: #9d4edd; }
+      
+      @keyframes title-reveal {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      /* --- END OF SPLASH SCREEN STYLES --- */
     </style>
     <!-- PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -189,6 +272,11 @@
 </script>
 </head>
   <body>
+    <div id="splash-screen">
+      <h1 class="splash-title">
+        <span>Expense</span><span class="splash-title-accent">Tracker</span>
+      </h1>
+    </div>
     <div id="root"></div>
     <script type="module" src="/index.js"></script>
   </body>
