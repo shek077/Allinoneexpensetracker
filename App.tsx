@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person, DashboardSettings } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -28,6 +29,7 @@ const SubscriptionManager = lazy(() => import('./components/SubscriptionManager'
 const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'));
 const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
 const CurrencyPrompt = lazy(() => import('./components/CurrencyPrompt'));
+const PdfGeneratingAnimation = lazy(() => import('./components/PdfGeneratingAnimation'));
 
 // --- Dashboard Settings Modal Component ---
 interface DashboardSettingsModalProps {
@@ -184,6 +186,7 @@ const App: React.FC = () => {
   const [filterTag, setFilterTag] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [pdfGenerationStatus, setPdfGenerationStatus] = useState<'idle' | 'processing' | 'success'>('idle');
 
   const { theme } = useTheme();
   const reportRef = useRef<HTMLDivElement>(null);
@@ -207,7 +210,7 @@ const App: React.FC = () => {
     if ('serviceWorker' in navigator) {
       const registerServiceWorker = async () => {
         try {
-          await navigator.serviceWorker.register('/sw.js');
+          await navigator.serviceWorker.register('./sw.js');
           console.log('Service Worker registered successfully.');
         } catch (error) {
           console.error('Service Worker registration failed:', error);
@@ -368,11 +371,28 @@ const App: React.FC = () => {
     setIsFormVisible(true);
   }
 
-  const handleExportPdf = useCallback(() => {
-    if (reportRef.current) {
-      generatePdf(reportRef.current, 'Expense_Report');
+  const handleExportPdf = useCallback(async () => {
+    if (reportRef.current && pdfGenerationStatus === 'idle') {
+      setPdfGenerationStatus('processing');
+  
+      // Allow UI to update before blocking main thread
+      await new Promise(resolve => setTimeout(resolve, 100));
+  
+      try {
+        await generatePdf(reportRef.current, 'Expense_Report');
+        setPdfGenerationStatus('success');
+  
+        setTimeout(() => {
+          setPdfGenerationStatus('idle');
+        }, 2000); // Show success for 2 seconds before hiding
+  
+      } catch (error) {
+        console.error("PDF generation failed:", error);
+        // Optionally, set a failure status and show an error message
+        setPdfGenerationStatus('idle'); // Hide animation on error
+      }
     }
-  }, []);
+  }, [pdfGenerationStatus]);
 
   const addOrUpdateBudgetGoal = useCallback((goal: Omit<BudgetGoal, 'id'>) => {
     setBudgetGoals(prev => {
@@ -650,6 +670,9 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 font-sans p-4 sm:p-6 md:p-8 ${themeClasses}`}>
+      <Suspense fallback={null}>
+        <PdfGeneratingAnimation status={pdfGenerationStatus} />
+      </Suspense>
       <Alerts alerts={alerts} onDismiss={dismissAlert} />
       <div className="max-w-screen-xl mx-auto">
         <Header />
