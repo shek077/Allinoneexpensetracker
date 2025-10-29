@@ -190,6 +190,33 @@
         border-radius: 50%;
       }
       
+      /* --- PDF ANIMATION STYLES --- */
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .animate-spin-slow {
+        animation: spin-slow 3s linear infinite;
+      }
+      @keyframes pdf-circle-in {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      .pdf-success-circle {
+        animation: pdf-circle-in 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      }
+      @keyframes pdf-check-draw {
+        from { stroke-dashoffset: 100; }
+        to { stroke-dashoffset: 0; }
+      }
+      .pdf-success-check {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: pdf-check-draw 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        animation-delay: 0.3s;
+      }
+      /* --- END PDF ANIMATION STYLES --- */
+
       /* --- START OF SPLASH SCREEN STYLES --- */
       #splash-screen {
         position: fixed;
