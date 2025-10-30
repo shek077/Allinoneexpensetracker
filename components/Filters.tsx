@@ -1,4 +1,5 @@
 
+
 import React, { useMemo } from 'react';
 import NeumorphicCard from './NeumorphicCard';
 import { Transaction } from '../types';
@@ -28,6 +29,7 @@ interface FiltersProps {
   onShowCategoryManager: () => void;
   onShowResetDialog: () => void;
   onShowDashboardSettings: () => void;
+  onShowPrivacyPolicy: () => void;
 }
 
 const CurrencyIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -99,6 +101,12 @@ const ResetIcon: React.FC<{ className?: string }> = ({ className }) => (
     </svg>
 );
 
+const PrivacyIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 20.944a11.955 11.955 0 0118 0a12.02 12.02 0 00-2.382-8.984z" />
+    </svg>
+);
+
 const ThemedNeumorphicInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
     const { theme } = useTheme();
     const themeClasses = {
@@ -155,6 +163,7 @@ const Filters: React.FC<FiltersProps> = ({
     onShowCategoryManager,
     onShowResetDialog,
     onShowDashboardSettings,
+    onShowPrivacyPolicy,
 }) => {
   const { theme } = useTheme();
   const categories = useMemo(() => {
@@ -279,7 +288,7 @@ const Filters: React.FC<FiltersProps> = ({
                 ))}
             </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 pt-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 pt-2">
             <button
             onClick={(e) => {
                 createGlobalRipple(e);
@@ -329,6 +338,16 @@ const Filters: React.FC<FiltersProps> = ({
             >
                 <SettingsIcon className="w-5 h-5" />
                 <span className="truncate">Dashboard</span>
+            </button>
+            <button
+            onClick={(e) => {
+                createGlobalRipple(e);
+                onShowPrivacyPolicy();
+            }}
+            className={`w-full h-12 font-bold py-3 px-4 rounded-xl transform active:scale-95 transition-all duration-200 ${buttonThemeClasses[theme]} flex items-center justify-center gap-2`}
+            >
+                <PrivacyIcon className="w-5 h-5" />
+                <span className="truncate">Privacy</span>
             </button>
             <button
             onClick={(e) => {
