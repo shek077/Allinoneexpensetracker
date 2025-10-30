@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { Transaction, BudgetGoal, Alert, Person, DashboardSettings } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -30,6 +31,7 @@ const CategoryTagManager = lazy(() => import('./components/CategoryTagManager'))
 const ConfirmationDialog = lazy(() => import('./components/ConfirmationDialog'));
 const CurrencyPrompt = lazy(() => import('./components/CurrencyPrompt'));
 const PdfGeneratingAnimation = lazy(() => import('./components/PdfGeneratingAnimation'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 
 // --- Dashboard Settings Modal Component ---
 interface DashboardSettingsModalProps {
@@ -148,6 +150,7 @@ const App: React.FC = () => {
   const [isCategoryManagerVisible, setIsCategoryManagerVisible] = useState(false);
   const [isResetDialogVisible, setIsResetDialogVisible] = useState(false);
   const [isCurrencyPromptVisible, setIsCurrencyPromptVisible] = useState(false);
+  const [isPrivacyPolicyVisible, setIsPrivacyPolicyVisible] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
 
   const [dashboardSettings, setDashboardSettings] = useLocalStorage<DashboardSettings>('dashboardSettings', {
@@ -721,6 +724,7 @@ const App: React.FC = () => {
             onShowCategoryManager={() => setIsCategoryManagerVisible(true)}
             onShowDashboardSettings={() => setIsDashboardSettingsVisible(true)}
             onShowResetDialog={() => setIsResetDialogVisible(true)}
+            onShowPrivacyPolicy={() => setIsPrivacyPolicyVisible(true)}
           />
           <TransactionList 
             transactions={filteredTransactions} 
@@ -834,6 +838,12 @@ const App: React.FC = () => {
                 onSettingsChange={setDashboardSettings}
                 onClose={() => setIsDashboardSettingsVisible(false)}
             />
+        </Suspense>
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={isPrivacyPolicyVisible} onClose={() => setIsPrivacyPolicyVisible(false)}>
+        <Suspense fallback={<Loader isModal={true} />}>
+            <PrivacyPolicy onClose={() => setIsPrivacyPolicyVisible(false)} />
         </Suspense>
       </AnimatedModal>
     </div>
